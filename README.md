@@ -25,9 +25,9 @@ pip install -r requirements.txt
 ```
 
 ### Ejecución programa
-
+```bash
 python source/main.py [parametro]
-
+```
 En caso de ningun parametro, por default se escribira 'Python'
 
 #### Ejemplos
