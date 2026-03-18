@@ -6,6 +6,23 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 import time
+import sys
+import os
+from datetime import datetime
+
+busqueda = "Python"
+busqueda = "Python"
+if len(sys.argv) > 1:
+    busqueda = " ".join(sys.argv[1:])
+
+print(f"Iniciando búsqueda para: {busqueda}")
+
+fecha_hora = datetime.now().strftime("%Y%m%d_%H%M")
+
+termino_limpio = busqueda.replace(" ", "_")
+nombre_archivo = f"data_{termino_limpio}_{fecha_hora}.csv"
+
+ruta_completa = os.path.join("data", nombre_archivo)
 
 service = Service(ChromeDriverManager().install())
 options = webdriver.ChromeOptions()
@@ -13,7 +30,7 @@ options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple
 driver = webdriver.Chrome(service=service, options=options)
 
 try:
-    print("Accediendo a Tecnoempleo...")
+    print("Accediendo a Tecnoempleo")
     driver.get("https://www.tecnoempleo.com")
 
     boton_cookies = WebDriverWait(driver, 10).until(
@@ -27,8 +44,8 @@ try:
     )
     driver.execute_script("arguments[0].focus();", caja_texto)
     caja_texto.clear()
-    caja_texto.send_keys("Python")
-    print("Filtrando por: Python")
+    caja_texto.send_keys(busqueda) 
+    print(f"Filtrando por: {busqueda}")
     boton_buscar = driver.find_element(By.XPATH, "//button[contains(., 'Buscar Trabajo')]")
     boton_buscar.click()
     print("Búsqueda realizada. Cargando resultados...")
@@ -78,8 +95,9 @@ try:
 
     if lista_final:
         df = pd.DataFrame(lista_final)
-        df.to_csv("data/dataset_tecnoempleo_total.csv", index=False, encoding="utf-8-sig")
-        print(f"¡Proceso terminado! Se han extraído {len(lista_final)} ofertas.")
+        df.to_csv(ruta_completa, index=False, encoding="utf-8-sig")
+        print(f"¡Proceso terminado! Archivo generado: {ruta_completa}")
+        print(f"Se han extraído {len(lista_final)} ofertas.")
 
 finally:
     driver.quit()
